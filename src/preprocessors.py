@@ -1,4 +1,20 @@
+from enum import Enum, unique, auto
+
 import cv2
+
+
+@unique
+class Filter(Enum):
+    median = auto()
+    gaussian = auto()
+    equalize_hist = auto()
+    adaptive_hist = auto()
+    adjust_contrast = auto()
+    canny = auto()
+    sobel = auto()
+
+    def __str__(self):
+        return ' '.join(word.title() for word in self.name.split('_'))
 
 
 class Preprocessors:
@@ -7,7 +23,7 @@ class Preprocessors:
         self.__train_images = train_images
         self.__test_images = test_images
 
-    def median(self):
+    def _median(self):
         for index, img in enumerate(self.__train_images):
             self.__train_images[index] = cv2.medianBlur(img, 3)
 
@@ -16,7 +32,7 @@ class Preprocessors:
 
         return self
 
-    def gaussian(self):
+    def _gaussian(self):
         for index, img in enumerate(self.__train_images):
             self.__train_images[index] = cv2.GaussianBlur(img, (3, 3), 0)
 
@@ -25,7 +41,7 @@ class Preprocessors:
 
         return self
 
-    def equalize_hist(self):
+    def _equalize_hist(self):
         for index, img in enumerate(self.__train_images):
             self.__train_images[index] = cv2.equalizeHist(img)
 
@@ -34,7 +50,7 @@ class Preprocessors:
 
         return self
 
-    def adaptive_hist(self):
+    def _adaptive_hist(self):
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
         for index, img in enumerate(self.__train_images):
@@ -45,18 +61,18 @@ class Preprocessors:
 
         return self
 
-    def adjust_contrast(self, brightness=-20, contrast=40):
+    def _adjust_contrast(self, brightness=-20, contrast=40):
         for index, img in enumerate(self.__train_images):
-            self.__train_images[index] = self.__apply_contrast(img, brightness,
-                                                               contrast)
+            self.__train_images[index] = self._apply_contrast(img, brightness,
+                                                              contrast)
 
         for index, img in enumerate(self.__test_images):
-            self.__test_images[index] = self.__apply_contrast(img, brightness,
-                                                              contrast)
+            self.__test_images[index] = self._apply_contrast(img, brightness,
+                                                             contrast)
 
         return self
 
-    def __apply_contrast(self, img, brightness, contrast):
+    def _apply_contrast(self, img, brightness, contrast):
         if brightness != 0:
             if brightness > 0:
                 shadow = brightness
@@ -80,7 +96,7 @@ class Preprocessors:
 
         return buf
 
-    def canny(self):
+    def _canny(self):
         for index, img in enumerate(self.__train_images):
             self.__train_images[index] = cv2.Canny(img, 100, 150)
 
@@ -89,16 +105,32 @@ class Preprocessors:
 
         return self
 
-    def sobel(self):
+    def _sobel(self):
         for index, img in enumerate(self.__train_images):
-            self.__train_images[index] = cv2.Sobel(img, ddepth=cv2.CV_64F, dx=1,
-                                                   dy=1, ksize=5)
+            self.__train_images[index] = cv2.Sobel(img, ddepth=cv2.CV_8U, dx=1,
+                                                   dy=0, ksize=3)
 
         for index, img in enumerate(self.__test_images):
-            self.__test_images[index] = cv2.Sobel(img, ddepth=cv2.CV_64F, dx=1,
+            self.__test_images[index] = cv2.Sobel(img, ddepth=cv2.CV_8U, dx=1,
                                                   dy=1, ksize=5)
 
         return self
 
-    def process(self):
+    def process(self, filters: [Filter]):
+        for filter in filters:
+            if filter == Filter.median:
+                self._median()
+            elif filter == Filter.gaussian:
+                self._gaussian()
+            elif filter == Filter.equalize_hist:
+                self._equalize_hist()
+            elif filter == Filter.adaptive_hist:
+                self._adaptive_hist()
+            elif filter == Filter.adjust_contrast:
+                self._adjust_contrast()
+            elif filter == Filter.canny:
+                self._canny()
+            elif filter == Filter.sobel:
+                self._sobel()
+
         return self.__train_images, self.__test_images
