@@ -6,3 +6,6 @@ pandas==1.4.1
 scikit-learn==1.0.2
 lightgbm==3.3.2
 tabulate==0.8.9
+albumentations==1.1.0
+keras==2.8.0
+tensorflow==2.8.0

@@ -6,7 +6,7 @@ import cv2
 
 class ImageReader:
 
-    def __init__(self, train_path="../images/train", test_path="../images/test",
+    def __init__(self, train_path="../images/train2", test_path="../images/test2",
                  image_size=128):
         self.__train_path = train_path
         self.__test_path = test_path
