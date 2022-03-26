@@ -7,11 +7,9 @@ from sklearn import preprocessing
 class FeatureExtractor:
 
     def __init__(self, *args):
-        if len(args) == 4:
+        if len(args) == 2:
             self.train_images = np.array(args[0])  # np.array(train_images)
             self.train_labels = np.array(args[1])  # np.array(train_labels)
-            self.test_images = np.array(args[2])  # np.array(test_images)
-            self.test_labels = np.array(args[3])  # np.array(test_labels)
             self._encode_labels()
         else:
             self._image = np.array(args[0])
@@ -19,17 +17,13 @@ class FeatureExtractor:
     def _encode_labels(self):
         # Encode labels from text (folder names) to integers.
         le = preprocessing.LabelEncoder()
-        le.fit(self.test_labels)
-        test_labels_encoded = le.transform(self.test_labels)
-        self.test_labels = test_labels_encoded
 
         le.fit(self.train_labels)
         train_labels_encoded = le.transform(self.train_labels)
         self.train_labels = train_labels_encoded
 
     def glcm_feature_extraction(self):
-        return _glcm(self.train_images), self.train_labels, \
-               _glcm(self.test_images), self.test_labels
+        return _glcm(self.train_images), self.train_labels
 
     def single_glcm_feature_extraction(self):
         return _glcm(self._image)

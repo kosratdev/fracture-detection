@@ -48,7 +48,7 @@ class Preprocessors:
 
         return self
 
-    def _adjust_contrast(self, brightness=-20, contrast=40):
+    def _adjust_contrast(self, brightness=-15, contrast=30):
         for index, img in enumerate(self._images):
             self._images[index] = _apply_contrast(img, brightness, contrast)
 

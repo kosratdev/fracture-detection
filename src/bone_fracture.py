@@ -1,6 +1,8 @@
+import random
 from enum import Enum, auto, unique
 
 import cv2
+from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
@@ -39,23 +41,30 @@ class FractureDetector:
 
         # Read image from the provided images to prepare the dataset.
         if dataset == DatasetType.augmented:
-            reader = ImageReader(train_path="../images/augmented_train",
-                                 test_path="../images/augmented_test")
+            reader = ImageReader(train_path="../images/augmented_images")
         elif dataset == DatasetType.edited:
-            reader = ImageReader(train_path="../images/edited_train",
-                                 test_path="../images/edited_test")
+            reader = ImageReader(train_path="../images/edited_images")
         else:
             reader = ImageReader()
 
-        o_train_images, o_train_labels, o_test_images, o_test_labels = reader.read()
+        o_train_images, o_train_labels = reader.read()
+        # index = random.randint(0, len(o_train_images))
+        # cv2.imshow("Original Image [" + str(index) + "]",
+        #            o_train_images[index])
 
-        # Apple preprocessors on the images.
+        # Apply preprocessors on the images.
         p_train_images = Preprocessors(o_train_images).process(filters)
-        p_test_images = Preprocessors(o_test_images).process(filters)
+        # cv2.imshow("Filtered Image [" + str(index) + "]",
+        #            p_train_images[index])
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
-        features = FeatureExtractor(p_train_images, o_train_labels,
-                                    p_test_images, o_test_labels)
-        self._train_images, self._train_labels, self._test_images, self._test_labels = features.glcm_feature_extraction()
+        features = FeatureExtractor(p_train_images, o_train_labels)
+        self._train_images, self._train_labels = features.glcm_feature_extraction()
+        self._train_images, self._test_images, self._train_labels, self._test_labels = model_selection.train_test_split(
+            self._train_images, self._train_labels, test_size=0.1,
+            random_state=0)
+
         self._clf = self._get_clf()
 
     def _get_clf(self):
