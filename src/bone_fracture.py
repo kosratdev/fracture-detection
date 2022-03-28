@@ -62,7 +62,7 @@ class FractureDetector:
         features = FeatureExtractor(p_train_images, o_train_labels)
         self._train_images, self._train_labels = features.glcm_feature_extraction()
         self._train_images, self._test_images, self._train_labels, self._test_labels = model_selection.train_test_split(
-            self._train_images, self._train_labels, test_size=0.1,
+            self._train_images, self._train_labels, test_size=0.2,
             random_state=0)
 
         self._clf = self._get_clf()

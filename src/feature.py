@@ -3,12 +3,14 @@ import pandas as pd
 from skimage.feature import graycomatrix, graycoprops
 from sklearn import preprocessing
 
+from src.glcm import GLCM
+
 
 class FeatureExtractor:
 
     def __init__(self, *args):
         if len(args) == 2:
-            self.train_images = np.array(args[0])  # np.array(train_images)
+            self.train_images = args[0]  # np.array(train_images)
             self.train_labels = np.array(args[1])  # np.array(train_labels)
             self._encode_labels()
         else:
@@ -23,10 +25,18 @@ class FeatureExtractor:
         self.train_labels = train_labels_encoded
 
     def glcm_feature_extraction(self):
-        return _glcm(self.train_images), self.train_labels
+        image_dataset = []
+        for image in self.train_images:
+            # Temporary data frame to capture information for each loop.
+            # df = pd.DataFrame()
+            # df.append(GLCM(np.array(image)).glcm_all())
+            # Append features from current image to the dataset
+            image_dataset.append(GLCM(image).glcm_all())
+
+        return image_dataset, self.train_labels
 
     def single_glcm_feature_extraction(self):
-        return _glcm(self._image)
+        return GLCM(self._image)
 
 
 def _glcm(dataset):
