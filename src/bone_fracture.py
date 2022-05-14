@@ -43,7 +43,7 @@ class FractureDetector:
         if dataset == DatasetType.augmented:
             reader = ImageReader(train_path="../images/augmented_images")
         elif dataset == DatasetType.edited:
-            reader = ImageReader(train_path="../images/edited_images")
+            reader = ImageReader(train_path="../images/edited2_images")
         else:
             reader = ImageReader()
 
