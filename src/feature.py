@@ -36,7 +36,7 @@ class FeatureExtractor:
         return image_dataset, self.train_labels
 
     def single_glcm_feature_extraction(self):
-        return GLCM(self._image)
+        return GLCM(self._image).glcm_all()
 
 
 def _glcm(dataset):
