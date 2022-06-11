@@ -2,6 +2,7 @@ import glob
 import os
 
 import cv2
+import numpy as np
 
 
 class ImageReader:
@@ -22,10 +23,10 @@ class ImageReader:
             label = directory_path.split("\\")[-1]
             for img_path in glob.glob(os.path.join(directory_path, "*.jpg")):
                 # Reading color images
-                img = cv2.imread(img_path, 0)
+                img = cv2.imread(img_path, cv2.IMREAD_COLOR)
                 # Resize images
                 img = cv2.resize(img, (256, 512))
-                images.append(img)
+                images.append(np.array(img))
                 labels.append(label)
 
         return images, labels
