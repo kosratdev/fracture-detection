@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from skimage.feature import graycomatrix, graycoprops
 from sklearn import preprocessing
+import cv2
 
 from src.glcm import GLCM
 
@@ -10,7 +11,7 @@ class FeatureExtractor:
 
     def __init__(self, *args):
         if len(args) == 2:
-            self.train_images = args[0]  # np.array(train_images)
+            self.train_images = np.array(args[0])  # np.array(train_images)
             self.train_labels = np.array(args[1])  # np.array(train_labels)
             self._encode_labels()
         else:
@@ -25,18 +26,10 @@ class FeatureExtractor:
         self.train_labels = train_labels_encoded
 
     def glcm_feature_extraction(self):
-        image_dataset = []
-        for image in self.train_images:
-            # Temporary data frame to capture information for each loop.
-            # df = pd.DataFrame()
-            # df.append(GLCM(np.array(image)).glcm_all())
-            # Append features from current image to the dataset
-            image_dataset.append(GLCM(image).glcm_all())
-
-        return image_dataset, self.train_labels
+        return _glcm(self.train_images), self.train_labels
 
     def single_glcm_feature_extraction(self):
-        return GLCM(self._image).glcm_all()
+        return _glcm(self.train_images)
 
 
 def _glcm(dataset):
@@ -109,6 +102,49 @@ def _glcm(dataset):
         df['Homogen5'] = GLCM_hom5
         GLCM_contr5 = graycoprops(GLCM5, 'contrast')[0]
         df['Contrast5'] = GLCM_contr5
+
+        # # CANNY EDGE
+        # edges = cv2.Canny(img, 100, 200)  # Image, min and max values
+        # edges1 = edges.reshape(-1)
+        # df['Canny Edge'] = edges1  # Add column to original dataframe
+        #
+        # from skimage.filters import roberts, sobel, scharr, prewitt
+        #
+        # # ROBERTS EDGE
+        # edge_roberts = roberts(img)
+        # edge_roberts1 = edge_roberts.reshape(-1)
+        # df['Roberts'] = edge_roberts1
+        #
+        # # SOBEL
+        # edge_sobel = sobel(img)
+        # edge_sobel1 = edge_sobel.reshape(-1)
+        # df['Sobel'] = edge_sobel1
+        #
+        # # SCHARR
+        # edge_scharr = scharr(img)
+        # edge_scharr1 = edge_scharr.reshape(-1)
+        # df['Scharr'] = edge_scharr1
+        #
+        # # PREWITT
+        # edge_prewitt = prewitt(img)
+        # edge_prewitt1 = edge_prewitt.reshape(-1)
+        # df['Prewitt'] = edge_prewitt1
+        #
+        # # GAUSSIAN with sigma=3
+        # from scipy import ndimage as nd
+        # gaussian_img = nd.gaussian_filter(img, sigma=3)
+        # gaussian_img1 = gaussian_img.reshape(-1)
+        # df['Gaussian s3'] = gaussian_img1
+        #
+        # # GAUSSIAN with sigma=7
+        # gaussian_img2 = nd.gaussian_filter(img, sigma=7)
+        # gaussian_img3 = gaussian_img2.reshape(-1)
+        # df['Gaussian s7'] = gaussian_img3
+        #
+        # # MEDIAN with sigma=3
+        # median_img = nd.median_filter(img, size=3)
+        # median_img1 = median_img.reshape(-1)
+        # df['Median s3'] = median_img1
 
         # Add more filters as needed
         # entropy = shannon_entropy(img)

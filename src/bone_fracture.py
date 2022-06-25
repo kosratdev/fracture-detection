@@ -6,7 +6,7 @@ from sklearn import model_selection
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
 
 from feature import FeatureExtractor
@@ -19,6 +19,7 @@ class DatasetType(Enum):
     original = auto()
     edited = auto()
     augmented = auto()
+    perfect = auto()
 
 
 @unique
@@ -41,9 +42,11 @@ class FractureDetector:
 
         # Read image from the provided images to prepare the dataset.
         if dataset == DatasetType.augmented:
-            reader = ImageReader(train_path="../images/augmented_images")
+            reader = ImageReader(train_path="../images/aug_perfect_images")
         elif dataset == DatasetType.edited:
             reader = ImageReader(train_path="../images/edited2_images")
+        elif dataset == DatasetType.perfect:
+            reader = ImageReader(train_path="../images/perfect_images")
         else:
             reader = ImageReader()
 
