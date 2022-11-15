@@ -26,10 +26,14 @@ class FeatureExtractor:
         self.train_labels = train_labels_encoded
 
     def glcm_feature_extraction(self):
-        return _glcm(self.train_images), self.train_labels
+        image_features = []
+        for image in self.train_images:
+            image_features.append(GLCM(image).glcm_all())
+        return image_features, self.train_labels
+        # return _glcm(self.train_images), self.train_labels
 
     def single_glcm_feature_extraction(self):
-        return _glcm(self.train_images)
+        return _glcm(self._image)
 
 
 def _glcm(dataset):
@@ -54,6 +58,8 @@ def _glcm(dataset):
         df['Homogen'] = GLCM_hom
         GLCM_contr = graycoprops(GLCM, 'contrast')[0]
         df['Contrast'] = GLCM_contr
+        GLCM_asm = graycoprops(GLCM, 'ASM')[0]
+        df['ASM'] = GLCM_asm
 
         GLCM2 = graycomatrix(img, [3], [0])
         GLCM_Energy2 = graycoprops(GLCM2, 'energy')[0]
@@ -66,6 +72,8 @@ def _glcm(dataset):
         df['Homogen2'] = GLCM_hom2
         GLCM_contr2 = graycoprops(GLCM2, 'contrast')[0]
         df['Contrast2'] = GLCM_contr2
+        GLCM_asm2 = graycoprops(GLCM2, 'ASM')[0]
+        df['ASM2'] = GLCM_asm2
 
         GLCM3 = graycomatrix(img, [5], [0])
         GLCM_Energy3 = graycoprops(GLCM3, 'energy')[0]
@@ -78,6 +86,8 @@ def _glcm(dataset):
         df['Homogen3'] = GLCM_hom3
         GLCM_contr3 = graycoprops(GLCM3, 'contrast')[0]
         df['Contrast3'] = GLCM_contr3
+        GLCM_asm3 = graycoprops(GLCM3, 'ASM')[0]
+        df['ASM3'] = GLCM_asm3
 
         GLCM4 = graycomatrix(img, [0], [np.pi / 4])
         GLCM_Energy4 = graycoprops(GLCM4, 'energy')[0]
@@ -90,6 +100,8 @@ def _glcm(dataset):
         df['Homogen4'] = GLCM_hom4
         GLCM_contr4 = graycoprops(GLCM4, 'contrast')[0]
         df['Contrast4'] = GLCM_contr4
+        GLCM_asm4 = graycoprops(GLCM4, 'ASM')[0]
+        df['ASM4'] = GLCM_asm4
 
         GLCM5 = graycomatrix(img, [0], [np.pi / 2])
         GLCM_Energy5 = graycoprops(GLCM5, 'energy')[0]
@@ -102,6 +114,8 @@ def _glcm(dataset):
         df['Homogen5'] = GLCM_hom5
         GLCM_contr5 = graycoprops(GLCM5, 'contrast')[0]
         df['Contrast5'] = GLCM_contr5
+        GLCM_asm5 = graycoprops(GLCM5, 'ASM')[0]
+        df['ASM5'] = GLCM_asm5
 
         # # CANNY EDGE
         # edges = cv2.Canny(img, 100, 200)  # Image, min and max values

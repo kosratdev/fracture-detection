@@ -8,6 +8,7 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC, LinearSVC
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import metrics
 
 from feature import FeatureExtractor
 from preprocessors import Preprocessors, Filter
@@ -63,9 +64,9 @@ class FractureDetector:
         # cv2.destroyAllWindows()
 
         features = FeatureExtractor(p_train_images, o_train_labels)
-        self._train_images, self._train_labels = features.glcm_feature_extraction()
+        self._images, self._labels = features.glcm_feature_extraction()
         self._train_images, self._test_images, self._train_labels, self._test_labels = model_selection.train_test_split(
-            self._train_images, self._train_labels, test_size=0.2,
+            self._images, self._labels, test_size=0.2,
             random_state=0)
 
         self._clf = self._get_clf()
@@ -109,4 +110,11 @@ class FractureDetector:
         data.extend(self._filters)
         data.append(self._ml)
         data.append(self._clf.score(self._test_images, self._test_labels))
+        scores = model_selection.cross_val_score(self._clf, self._images,
+                                                 self._labels, cv=5)
+        print(scores)
+        print("%0.2f accuracy with a standard deviation of %0.2f" % (
+            scores.mean(), scores.std()))
+        predicted = self._clf.predict(self._test_images)
+        print(metrics.classification_report(self._test_labels, predicted))
         return data
