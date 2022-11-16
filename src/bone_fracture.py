@@ -13,6 +13,7 @@ from sklearn import metrics
 from feature import FeatureExtractor
 from preprocessors import Preprocessors, Filter
 from reader import ImageReader
+from print import print_table
 
 
 @unique
@@ -82,10 +83,10 @@ class FractureDetector:
             clf = GaussianNB()
             return clf.fit(self._train_images, self._train_labels)
         elif self._ml == Ml.random_forest:
-            clf = RandomForestClassifier(n_estimators=50, random_state=42)
+            clf = RandomForestClassifier()
             return clf.fit(self._train_images, self._train_labels)
         elif self._ml == Ml.nearest_neighbors:
-            clf = KNeighborsClassifier(n_neighbors=15)
+            clf = KNeighborsClassifier(n_neighbors=30)
             return clf.fit(self._train_images, self._train_labels)
 
     def predict(self, img_path: str, img_size=128):
@@ -109,12 +110,17 @@ class FractureDetector:
         data = []
         data.extend(self._filters)
         data.append(self._ml)
-        data.append(self._clf.score(self._test_images, self._test_labels))
-        scores = model_selection.cross_val_score(self._clf, self._images,
-                                                 self._labels, cv=5)
-        print(scores)
-        print("%0.2f accuracy with a standard deviation of %0.2f" % (
-            scores.mean(), scores.std()))
+        # data.append(self._clf.score(self._test_images, self._test_labels))
+        # scores = model_selection.cross_val_score(self._clf, self._images,
+        #                                          self._labels, cv=5)
+        # print(scores)
+        # print("%0.2f accuracy with a standard deviation of %0.2f" % (
+        #     scores.mean(), scores.std()))
         predicted = self._clf.predict(self._test_images)
-        print(metrics.classification_report(self._test_labels, predicted))
+        result = metrics.classification_report(self._test_labels, predicted,
+                                               output_dict=True)
+        data.append(result['1']['precision'])
+        data.append(result['1']['recall'])
+        data.append(result['accuracy'])
+        # print_table(data)
         return data
