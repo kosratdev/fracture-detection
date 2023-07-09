@@ -1,3 +1,5 @@
+import cv2
+
 from preprocessors import Filter
 from bone_fracture import FractureDetector, Ml, DatasetType
 from print import print_table
