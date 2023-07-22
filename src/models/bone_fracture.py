@@ -14,10 +14,11 @@ from src.models.feature import FeatureExtractor
 from src.models.preprocessors import Preprocessors, Filter
 from src.models.reader import ImageReader
 
+
 @unique
 class DatasetType(Enum):
-    eeeh = auto()
-    roboflow = auto()
+    EEEH = auto()
+    Roboflow = auto()
 
 
 @unique
@@ -34,14 +35,15 @@ class Ml(Enum):
 
 class FractureDetector:
 
-    def __init__(self, filters: [Filter], ml: Ml, dataset=DatasetType.eeeh):
+    def __init__(self, filters: [Filter], ml: Ml, dataset=DatasetType.EEEH):
+        self._dataset = dataset
         self._filters = filters
         self._ml = ml
 
         # Read image from the provided images to prepare the dataset.
-        if dataset == DatasetType.eeeh:
+        if dataset == DatasetType.EEEH:
             reader = ImageReader(train_path="../../images/ml_eeeh_dataset")
-        elif dataset == DatasetType.roboflow:
+        elif dataset == DatasetType.Roboflow:
             reader = ImageReader(train_path="../../images/ml_roboflow_dataset")
         else:
             reader = ImageReader()
@@ -93,12 +95,38 @@ class FractureDetector:
 
     def accuracy(self):
         data = []
-        data.extend(self._filters)
+        data.append(self._dataset.name)
         data.append(self._ml)
         predicted = self._clf.predict(self._test_images)
         result = metrics.classification_report(self._test_labels, predicted,
                                                output_dict=True)
-        data.append(result['1']['precision'])
-        data.append(result['1']['recall'])
+        data.append(result['weighted avg']['precision'])
+        data.append(result['weighted avg']['recall'])
         data.append(result['accuracy'])
         return data
+
+    @staticmethod
+    def train_and_test(filters):
+        return [
+            FractureDetector(filters, Ml.svm,
+                             dataset=DatasetType.EEEH).accuracy(),
+            FractureDetector(filters, Ml.svm,
+                             dataset=DatasetType.Roboflow).accuracy(),
+            FractureDetector(filters, Ml.decision_tree,
+                             dataset=DatasetType.EEEH).accuracy(),
+            FractureDetector(filters, Ml.decision_tree,
+                             dataset=DatasetType.Roboflow).accuracy(),
+            FractureDetector(filters, Ml.naive_bayes,
+                             dataset=DatasetType.EEEH).accuracy(),
+            FractureDetector(filters, Ml.naive_bayes,
+                             dataset=DatasetType.Roboflow).accuracy(),
+            FractureDetector(filters, Ml.random_forest,
+                             dataset=DatasetType.EEEH).accuracy(),
+            FractureDetector(filters, Ml.random_forest,
+                             dataset=DatasetType.Roboflow).accuracy(),
+            FractureDetector(filters, Ml.nearest_neighbors,
+                             dataset=DatasetType.EEEH).accuracy(),
+            FractureDetector(filters, Ml.nearest_neighbors,
+                             dataset=DatasetType.Roboflow).accuracy(),
+
+        ]
