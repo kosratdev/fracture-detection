@@ -1,9 +1,0 @@
-{
-'filer_size':'(3, 3)'
-'dropout_rate':'0.5'
-'batch_size':'32'
-'num_of_epochs':'5'
-'learning_rate':'0.0001'
-'optimizer':'Adam'
-'image_size':'200'
-}
