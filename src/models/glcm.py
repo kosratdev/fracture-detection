@@ -4,9 +4,17 @@ from skimage.feature import graycomatrix, graycoprops
 
 class GLCM:
     def __init__(self, image):
-        distance = [1, 3, 5, 9]
-        angles = [0, np.pi / 4, np.pi / 2, 3 * np.pi / 4, 5 * np.pi / 4,
-                  3 * np.pi / 2, 7 * np.pi / 4]
+        distance = [1, 3, 5, 8]
+        angles = [
+            0,  # 0
+            np.pi / 4,  # 45
+            np.pi / 2,  # 90
+            3 * np.pi / 4,  # 135
+            np.pi,  # 180
+            # 5 * np.pi / 4,    # 225
+            # 3 * np.pi / 2,    # 270
+            # 7 * np.pi / 4     # 315
+        ]
         self.glcm_mat = graycomatrix(image, distances=distance, angles=angles)
         self.properties = ['energy', 'correlation', 'dissimilarity',
                            'homogeneity', 'contrast']
